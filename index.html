@@ -1,101 +1,38 @@
-<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Golden Draft - Stake 2K Win 4K</title><style>
-body{background:#0d0d0d;color:#fff;font-family:sans-serif;text-align:center;margin:0}
-h1{background:linear-gradient(90deg,gold,orange);color:#000;padding:12px;margin:0;font-size:20px}
-#pot{background:#1a1a1a;border:2px solid gold;margin:8px auto;max-width:360px;padding:8px;border-radius:10px;color:gold;font-weight:bold}
-.board{display:grid;grid-template-columns:repeat(8,1fr);max-width:360px;margin:10px auto;border:3px solid gold}
-.cell{aspect-ratio:1;display:flex;align-items:center;justify-content:center}.dark{background:#8B4513}.light{background:#F5DEB3}
-.piece{width:80%;height:80%;border-radius:50%;border:2px solid #fff;display:flex;align-items:center;justify-content:center;font-weight:900}
-.gold{background:gold;color:#000}.black{background:#111;color:#fff}.king{outline:3px solid gold}.sel{outline:4px solid lime}
-.btn{background:gold;color:#000;padding:12px 16px;border:none;border-radius:10px;font-weight:800;margin:4px}
-.card{background:#222;border:2px solid gold;padding:16px;border-radius:12px;margin:8px auto;max-width:360px}
-input,select{width:100%;padding:12px;margin:5px 0;border-radius:8px;border:none}
-#lobby{position:fixed;inset:0;background:#0d0d0d;z-index:20;padding:12px;overflow:auto}
-#winScreen{position:fixed;inset:0;background:rgba(0,0,0,.95);z-index:30;display:none;align-items:center;justify-content:center}
-.paid{background:#003300;border-color:lime!important;color:lime}
-</style></head><body>
-<h1>👑 GOLDEN DRAFT - STAKE 2K, WIN 4K</h1>
-<div id="pot">💰 POT: <span id="potAmt">0</span> UGX | Fee 10% to House</div>
-<div id="turn" style="color:gold;font-weight:bold">Deposit to Start</div>
-<div class="board" id="board"></div>
-<button class="btn" onclick="init()">New Board</button>
-
-<!-- LOBBY - DEPOSIT -->
-<div id="lobby">
-<div style="max-width:380px;margin:0 auto">
-<h2 style="color:gold">💰 Pay To Enter - 2000 UGX Each</h2>
-<p style="font-size:13px;color:#aaa">2 Players deposit, Winner takes 3600 UGX (4000 - 10% house)</p>
-
-<div class="card" id="p1Card">
-<h3>Player 1 - Gold (Top)</h3>
-<input id="p1phone" placeholder="07XXXXXXXX - P1 Phone" type="tel">
-<select id="p1net"><option>MTN MoMo</option><option>Airtel Money</option></select>
-<button class="btn" id="p1btn" style="width:100%" onclick="deposit(1)">Deposit 2000 UGX - Player 1</button>
-<div id="p1status">❌ Not Paid</div>
-</div>
-
-<div class="card" id="p2Card">
-<h3>Player 2 - Black (Bottom)</h3>
-<input id="p2phone" placeholder="07XXXXXXXX - P2 Phone" type="tel">
-<select id="p2net"><option>MTN MoMo</option><option>Airtel Money</option></select>
-<button class="btn" id="p2btn" style="width:100%" onclick="deposit(2)">Deposit 2000 UGX - Player 2</button>
-<div id="p2status">❌ Not Paid</div>
-</div>
-
-<div class="card">
-Pot: <span id="lobbyPot">0</span> UGX / 4000 UGX<br>
-<button class="btn" style="width:100%;background:#444;color:#fff" onclick="demo()">Free Demo (No Money)</button>
-<button class="btn" id="startBtn" style="width:100%;display:none;background:lime;color:#000" onclick="startGame()">✅ Both Paid - START GAME</button>
-<p style="font-size:10px;color:#888;margin-top:8px">Real MoMo: Integrate Yo! Payments API yo.co.ug to collect real money. This demo simulates payment.</p>
-</div>
-</div>
-</div>
-
-<!-- WINNER SCREEN -->
-<div id="winScreen"><div class="card" style="width:92%;max-width:340px">
-<h1 id="winText" style="background:none;color:gold;font-size:28px"></h1>
-<p id="winDetail"></p>
-<div style="background:#111;padding:10px;border-radius:8px;margin:10px 0">
-Pot: 4000 UGX<br>House Fee (10%): 400 UGX<br><b>Winner Gets: 3600 UGX</b>
-</div>
-<input id="winnerPhone" readonly style="background:#333;color:lime">
-<button class="btn" style="width:100%" onclick="payout()">💸 Payout 3600 UGX to Winner</button>
-<button class="btn" style="width:100%;background:#444;color:#fff" onclick="resetLobby()">Play Again - New Stake</button>
-</div></div>
-
-<script>
-let BD=[],sel=null,turn='gold',deposits={p1:false,p2:false},pot=0;
+<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Golden Draft - Flying King Multi</title><style>body{background:#0d0d0d;color:#fff;font-family:sans-serif;text-align:center;margin:0}h1{background:linear-gradient(90deg,gold,orange);color:#000;padding:10px;margin:0;font-size:18px}#pot{background:#1a1a1a;border:2px solid gold;margin:6px auto;max-width:380px;padding:6px;border-radius:10px;color:gold;font-weight:bold}.board{display:grid;grid-template-columns:repeat(8,1fr);max-width:360px;margin:6px auto;border:3px solid gold}.cell{aspect-ratio:1;display:flex;align-items:center;justify-content:center}.dark{background:#8B4513}.light{background:#F5DEB3}.piece{width:78%;height:78%;border-radius:50%;border:2px solid #fff;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:11px}.gold{background:gold;color:#000}.black{background:#111;color:#fff}.red{background:#c00;color:#fff}.blue{background:#00c;color:#fff}.king{outline:3px solid lime;box-shadow:0 0 10px lime;transform:scale(1.15)}.sel{outline:4px solid lime;background:lime!important}.btn{background:gold;color:#000;padding:10px 12px;border:none;border-radius:8px;font-weight:800;margin:3px}.card{background:#222;border:2px solid gold;padding:10px;border-radius:10px;margin:6px auto;max-width:380px}input,select{width:100%;padding:10px;margin:4px 0;border-radius:6px;border:none;font-size:14px}#lobby{position:fixed;inset:0;background:#0d0d0d;z-index:20;padding:10px;overflow:auto}#winScreen{position:fixed;inset:0;background:rgba(0,0,0,.96);z-index:30;display:none;align-items:center;justify-content:center}.paid{border-color:lime!important;background:#0a2a0a!important}.highlight{background:yellow!important}</style></head><body><h1>👑 FLYING KING + MULTI PLAYERS</h1><div id="pot">💰 POT: <span id="potAmt">0</span> UGX | Players: <span id="pcount">0</span></div><div id="turn" style="color:gold;font-weight:bold;font-size:13px">Deposit to Start</div><div class="board" id="board"></div><div id="controls" style="margin:5px"><button class="btn" onclick="init()">Reset Board</button><span id="kingInfo" style="color:lime;font-size:11px"> 👑 King = Fly any distance!</span></div><div id="lobby"><div style="max-width:390px;margin:0 auto"><h2 style="color:gold;margin:6px">💰 Multi-Stake Tournament</h2><p style="font-size:11px;color:#aaa;margin:4px">2-4 Players deposit 2K each. Winner takes all. King flies long!</p><div style="display:flex;gap:4px"><button class="btn" style="flex:1" onclick="setPlayers(2)">2 Players<br>Pot 4K</button><button class="btn" style="flex:1" onclick="setPlayers(3)">3 Players<br>Pot 6K</button><button class="btn" style="flex:1" onclick="setPlayers(4)">4 Players<br>Pot 8K</button></div><div id="playerSlots"></div><div class="card">Pot: <span id="lobbyPot">0</span> UGX / <span id="needPot">4000</span> UGX<br><button class="btn" style="width:100%;background:#444;color:#fff" onclick="demo()">Free Demo (No Money)</button><button class="btn" id="startBtn" style="width:100%;display:none;background:lime;color:#000;font-size:16px" onclick="startGame()">✅ All Paid - START BATTLE</button><p style="font-size:9px;color:#666">King rule: Normal = 1 step, KING = any distance diagonal. Must capture if possible.</p></div></div></div><div id="winScreen"><div class="card" style="width:94%;max-width:360px"><h1 id="winText" style="background:none;color:gold;font-size:26px;margin:6px"></h1><p id="winDetail" style="font-size:13px"></p><div style="background:#111;padding:8px;border-radius:8px;margin:8px 0;font-size:12px">Pot: <span id="finalPot">0</span> UGX<br>House 10%: <span id="houseFee">0</span> UGX<br><b style="color:gold;font-size:16px">Winner Gets: <span id="winnerAmt">0</span> UGX</b></div><input id="winnerPhone" readonly style="background:#333;color:lime"><button class="btn" style="width:100%" onclick="payout()">💸 Payout Winner</button><button class="btn" style="width:100%;background:#444;color:#fff" onclick="resetLobby()">New Tournament</button></div></div><script>
+let BD=[],sel=null,turn='gold',deposits=[],pot=0,maxPlayers=2,colors=['gold','black','red','blue'],names=['Gold','Black','Red','Blue'],mustCaptures=[];
+function setPlayers(n){maxPlayers=n;document.getElementById('needPot').textContent=n*2000;renderSlots();}
+function renderSlots(){let h='';deposits=[];for(let i=0;i<maxPlayers;i++){deposits.push(false);h+=`<div class="card" id="pCard${i}"><h3 style="margin:4px;color:${colors[i]=='gold'?'gold':colors[i]}">Player ${i+1} - ${names[i]}</h3><input id="pphone${i}" placeholder="07XXXXXXXX - P${i+1}" type="tel"><select><option>MTN MoMo</option><option>Airtel Money</option></select><button class="btn" id="pbtn${i}" style="width:100%;background:${colors[i]=='gold'?'gold':colors[i]};color:${colors[i]=='gold'?'#000':'#fff'}" onclick="deposit(${i})">Deposit 2000 - ${names[i]}</button><div id="pstatus${i}">❌ Not Paid</div></div>`}document.getElementById('playerSlots').innerHTML=h;pot=0;updatePot();}
+function updatePot(){document.getElementById('potAmt').textContent=pot;document.getElementById('lobbyPot').textContent=pot;document.getElementById('pcount').textContent=deposits.filter(d=>d).length+'/'+maxPlayers;let paid=deposits.filter(d=>d).length;if(paid==maxPlayers&&paid>0)document.getElementById('startBtn').style.display='block';else document.getElementById('startBtn').style.display='none';}
+function deposit(i){let ph=document.getElementById('pphone'+i).value;if(ph.length<10)return alert('Enter 07XXXXXXXX');deposits[i]=true;pot+=2000;document.getElementById('pCard'+i).classList.add('paid');document.getElementById('pstatus'+i).innerHTML='✅ Paid 2000 - '+ph;document.getElementById('pbtn'+i).textContent='✅ Deposited';document.getElementById('pbtn'+i).disabled=true;updatePot();}
 const boardEl=document.getElementById('board'),turnEl=document.getElementById('turn');
-function init(){BD=[];for(let r=0;r<8;r++){BD[r]=[];for(let c=0;c<8;c++){let p=null;if((r+c)%2==1){if(r<3)p={c:'black',k:0};if(r>4)p={c:'gold',k:0}}BD[r][c]=p}}draw();}
-function draw(){boardEl.innerHTML='';let g=0,bl=0;for(let r=0;r<8;r++)for(let c=0;c<8;c++){let d=document.createElement('div');d.className='cell '+((r+c)%2?'dark':'light');d.onclick=()=>clk(r,c);let p=BD[r][c];if(p){if(p.c=='gold')g++;else bl++;let e=document.createElement('div');e.className='piece '+p.c+(p.k?' king':'')+(sel&&sel.r==r&&sel.c==c?' sel':'');e.textContent=p.k?'👑':'';d.appendChild(e)}boardEl.appendChild(d)}if(deposits.p1&&deposits.p2){turnEl.textContent=(turn=='gold'?'P1 Gold':'P2 Black')+' Turn | G:'+g+' B:'+bl;if(g==0||bl==0){let winner=g==0?'Player 2 Black':'Player 1 Gold',winPhone=g==0?document.getElementById('p2phone').value:document.getElementById('p1phone').value;showWin(winner,winPhone);}}}
-
-function clk(r,c){if(!deposits.p1||!deposits.p2)return alert('Both must deposit first!');let p=BD[r][c];if(sel){if(valid(sel.r,sel.c,r,c)){move(sel.r,sel.c,r,c);sel=null;turn=turn=='gold'?'black':'gold';}else sel=null;}else if(p&&p.c==turn)sel={r,c};draw();}
-function valid(r1,c1,r2,c2){if(BD[r2][c2])return 0;let dr=r2-r1,dc=c2-c1,pc=BD[r1][c1],dir=pc.c=='gold'?-1:1;if(!pc.k&&dr*dir<0)return 0;if(Math.abs(dr)==1&&Math.abs(dc)==1)return 1;if(Math.abs(dr)==2&&Math.abs(dc)==2){let m=BD[(r1+r2)/2][(c1+c2)/2];if(m&&m.c!=pc.c)return 1}return 0;}
-function move(r1,c1,r2,c2){if(Math.abs(r2-r1)==2)BD[(r1+r2)/2][(c1+c2)/2]=null;let pc=BD[r1][c1];BD[r2][c2]=pc;BD[r1][c1]=null;if((pc.c=='gold'&&r2==0)||(pc.c=='black'&&r2==7))pc.k=1;}
-
-function deposit(player){
-let phone=document.getElementById('p'+player+'phone').value;
-if(phone.length<10)return alert('Enter valid 07XXXXXXXX');
-deposits['p'+player]=true; pot+=2000;
-document.getElementById('p'+player+'Card').classList.add('paid');
-document.getElementById('p'+player+'status').innerHTML='✅ Paid 2000 UGX - '+phone;
-document.getElementById('p'+player+'btn').textContent='✅ Deposited';
-document.getElementById('p'+player+'btn').disabled=true;
-document.getElementById('potAmt').textContent=pot;
-document.getElementById('lobbyPot').textContent=pot;
-if(pot>=4000)document.getElementById('startBtn').style.display='block';
- // REAL MOMO API HERE:
-// fetch('https://yo.co.ug/api/deposit',{method:'POST',body:JSON.stringify({phone,amount:2000})})
+function init(){BD=[];for(let r=0;r<8;r++){BD[r]=[];for(let c=0;c<8;c++){let p=null;if((r+c)%2==1){if(r<3){let col=maxPlayers>2?colors[r%2==0?1:0]:'black';p={c:col,k:0}}if(r>4){let col=maxPlayers>2?colors[r%2==0?0:2]:'gold';p={c:col,k:0}}}BD[r][c]=p}}sel=null;turn=colors[0];draw();}
+function draw(){boardEl.innerHTML='';let counts={};colors.forEach(c=>counts[c]=0);for(let r=0;r<8;r++)for(let c=0;c<8;c++){let cell=document.createElement('div');cell.className='cell '+((r+c)%2?'dark':'light');cell.onclick=()=>clk(r,c);let p=BD[r][c];if(p){counts[p.c]++;let el=document.createElement('div');el.className='piece '+p.c+(p.k?' king':'')+(sel&&sel.r==r&&sel.c==c?' sel':'');el.textContent=p.k?'👑 KING':'';cell.appendChild(el)}boardEl.appendChild(cell)}// win check
+let alive=Object.keys(counts).filter(k=>counts[k]>0 && deposits[colors.indexOf(k)]);if(deposits.filter(d=>d).length>=2 && alive.length==1){let winner=alive[0],idx=colors.indexOf(winner);let phone=document.getElementById('pphone'+idx)?.value||'Winner';showWin(names[idx],phone,winner)}turnEl.textContent='Turn: '+names[colors.indexOf(turn)]+' | '+Object.entries(counts).map(([k,v])=>k+':'+v).join(' ');}
+function clk(r,c){if(deposits.filter(d=>d).length<maxPlayers)return alert('All must deposit!');let p=BD[r][c];if(sel){if(isValidMove(sel.r,sel.c,r,c)){doMove(sel.r,sel.c,r,c);sel=null;nextTurn();}else sel=null;}else if(p&&p.c==turn){sel={r,c};highlightMoves(r,c)}draw();}
+function highlightMoves(r,c){/* optional */}
+function nextTurn(){let idx=colors.indexOf(turn);for(let i=1;i<=maxPlayers;i++){let ni=(idx+i)%maxPlayers;if(deposits[ni] && countPieces(colors[ni])>0){turn=colors[ni];return}} }
+function countPieces(col){let n=0;for(let r=0;r<8;r++)for(let c=0;c<8;c++)if(BD[r][c]?.c==col)n++;return n;}
+function isValidMove(r1,c1,r2,c2){if(BD[r2][c2])return false;let pc=BD[r1][c1];let dr=r2-r1,dc=c2-c1;if(Math.abs(dr)!=Math.abs(dc))return false;let steps=Math.abs(dr);if(!pc.k){ // normal: 1 step, or 2 capture
+if(steps==1){let dir=pc.c=='gold'?-1:1;if(pc.c!='black'&&pc.c!='gold')dir=dr>0?1:-1;if(pc.c=='gold'&&dr>0)return false;if(pc.c=='black'&&dr<0&&maxPlayers==2)return false;return true;}
+if(steps==2){let mr=(r1+r2)/2,mc=(c1+c2)/2;let mid=BD[mr][mc];return mid&&mid.c!=pc.c;}
+return false;
+}else{ // FLYING KING - long distance
+let drStep=dr>0?1:-1, dcStep=dc>0?1:-1;let r=r1+drStep,c=c1+dcStep;let foundEnemy=null,enemyPos=null;
+while(r!=r2&&c!=c2){let cur=BD[r][c];if(cur){if(cur.c==pc.c)return false;if(foundEnemy)return false;foundEnemy=cur;enemyPos={r,c}}r+=drStep;c+=dcStep}
+if(foundEnemy){ // must land beyond enemy, any distance empty - valid capture
+return true;
+}else{ // simple long move, no piece in path
+return true;
 }
-function startGame(){document.getElementById('lobby').style.display='none';init();}
-function demo(){deposits={p1:true,p2:true};pot=4000;startGame();}
-function showWin(winner,phone){
-document.getElementById('winText').textContent='🏆 '+winner+' WINS!';
-document.getElementById('winDetail').textContent=winner+' wins the pot!';
-document.getElementById('winnerPhone').value=phone+' will receive 3600 UGX';
-document.getElementById('winScreen').style.display='flex';
 }
-function payout(){let wPhone=document.getElementById('winnerPhone').value;alert('Payout 3600 UGX sent to '+wPhone+'\nHouse keeps 400 UGX\n\nFor real money, integrate Yo! Payments payout API');resetLobby();}
-function resetLobby(){deposits={p1:false,p2:false};pot=0;document.getElementById('potAmt').textContent=0;document.getElementById('lobbyPot').textContent=0;document.getElementById('winScreen').style.display='none';document.getElementById('lobby').style.display='block';location.reload();}
-init();
+}
+function doMove(r1,c1,r2,c2){let pc=BD[r1][c1];if(!pc.k){if(Math.abs(r2-r1)==2){let mr=(r1+r2)/2,mc=(c1+c2)/2;BD[mr][mc]=null}
+}else{ // king capture - remove first enemy in path
+let drStep=r2>r1?1:-1, dcStep=c2>c1?1:-1;let r=r1+drStep,c=c1+dcStep;
+while(r!=r2&&c!=c2){if(BD[r][c]){BD[r][c]=null;break;}r+=drStep;c+=dcStep}
+}
+BD[r2][c2]=pc;BD[r1][c1]=null;if((pc.c=='gold'&&r2==0)||(pc.c=='black'&&r2==7)||r2==0||r2==7)pc.k=1;}
+function showWin(name,phone,col){let fee=Math.floor(pot*0.1),win=pot-fee;document.getElementById('winText').textContent='🏆 '+name+' WINS!';document.getElementById('winDetail').textContent='Flying King victory! '+name+' took all!';document.getElementById('finalPot').textContent=pot;document.getElementById('houseFee').textContent=fee;document.getElementById('winnerAmt').textContent=win;document.getElementById('winnerPhone').value=phone+' gets '+win+' UGX';document.getElementById('winScreen').style.display='flex';}
+function startGame(){document.getElementById('lobby').style.display='none';init();}function demo(){for(let i=0;i<maxPlayers;i++)deposits[i]=true;pot=maxPlayers*2000;startGame();}function payout(){alert('Payout '+document.getElementById('winnerAmt').textContent+' UGX sent!');resetLobby();}function resetLobby(){location.reload();}
+setPlayers(2);renderSlots();init();
 </script></body></html>
