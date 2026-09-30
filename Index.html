@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Golden Draft</title>
+<style>
+body{background:#111;color:#fff;text-align:center;font-family:Arial;padding:20px}
+h1{color:gold}
+.board{display:grid;grid-template-columns:repeat(8,1fr);width:90vw;max-width:400px;margin:20px auto;border:3px solid gold}
+.cell{aspect-ratio:1;display:flex;align-items:center;justify-content:center;font-size:30px}
+.dark{background:#8B4513}
+.light{background:#F5DEB3}
+.piece{width:80%;height:80%;border-radius:50%;display:flex;align-items:center;justify-content:center}
+.black{background:black;color:white;border:2px solid white}
+.gold{background:gold;color:black;border:2px solid white}
+button{padding:10px 20px;background:gold;border:none;font-weight:bold;margin:10px;border-radius:10px}
+</style>
+</head>
+<body>
+<h1>👑 GOLDEN DRAFT 👑</h1>
+<p>Uganda's Best Draft Game</p>
+<div class="board" id="board"></div>
+<p id="status">Your Turn - Gold Pieces</p>
+<button onclick="resetGame()">New Game</button>
+<script>
+const boardEl=document.getElementById('board');
+const statusEl=document.getElementById('status');
+let board=[],sel=null;
+function resetGame(){
+board=[];
+for(let r=0;r<8;r++){
+board[r]=[];
+for(let c=0;c<8;c++){
+if((r+c)%2==1 && r<3) board[r][c]='b';
+else if((r+c)%2==1 && r>4) board[r][c]='g';
+else board[r][c]=null;
+}}
+sel=null;draw();
+}
+function draw(){
+boardEl.innerHTML='';
+for(let r=0;r<8;r++){
+for(let c=0;c<8;c++){
+let cell=document.createElement('div');
+cell.className='cell '+(((r+c)%2==0)?'light':'dark');
+if(board[r][c]){
+let p=document.createElement('div');
+p.className='piece '+(board[r][c]=='b'?'black':'gold');
+p.textContent='●';
+cell.appendChild(p);
+}
+cell.onclick=()=>click(r,c);
+boardEl.appendChild(cell);
+}}}
+function click(r,c){
+if(board[r][c]=='g'){sel=[r,c];statusEl.textContent='Selected! Tap where to move';return;}
+if(sel){
+let [sr,sc]=sel;
+if(Math.abs(r-sr)==1 && Math.abs(c-sc)==1 &&!board[r][c]){
+board[r][c]=board[sr][sc];board[sr][sc]=null;
+if(r==0){statusEl.textContent='You Win! King!';}else statusEl.textContent='Moved! Computer turn...';
+setTimeout(computerMove,600);
+}
+sel=null;draw();
+}}
+function computerMove(){
+let moves=[];
+for(let r=0;r<8;r++)for(let c=0;c<8;c++)if(board[r][c]=='b'){
+for(let dr=1;dr<2;dr++)for(let dc of [-1,1]){
+let nr=r+dr,nc=c+dc;
+if(nr>=0&&nr<8&&nc>=0&&nc<8&&!board[nr][nc]) moves.push([r,c,nr,nc]);
+}}
+if(moves.length){
+let m=moves[Math.floor(Math.random()*moves.length)];
+board[m[2]][m[3]]=board[m[0]][m[1]];board[m[0]][m[1]]=null;
+}
+draw();statusEl.textContent='Your Turn - Gold Pieces';
+}
+resetGame();
+</script>
+</body>
+</html>
